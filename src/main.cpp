@@ -1,7 +1,16 @@
 #include <Arduino.h>
-#include <test.h>
+#include <scheduler.h>
+#include <task_queue.h>
 
 int LED_STATE = 1;
+const int NUM_OF_TASKS = 2;
+
+TaskQueue* q;
+
+void print()
+{
+  Serial.println("Test task code");
+}
 
 /**
  * Why use the prescalar?
@@ -12,6 +21,7 @@ int LED_STATE = 1;
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
+  Serial.begin(9600);
 
   cli(); // disable interrupts while configuring timer
 
@@ -25,10 +35,16 @@ void setup() {
   OCR1A = 62500; // match every 1 second
 
   sei(); // enable interrupts
+
+  q = new TaskQueue();
+  q->enqueue(new Task{1, 1, 4, print});
+  q->enqueue(new Task{2, 2, 3, print});
 }
 
 void loop() {
+  scheduler(q);
 
+  delay(2000);
 }
 
 ISR(TIMER1_COMPA_vect) {

@@ -58,9 +58,21 @@ int TaskQueue::size()
     return count;
 }
 
-void TaskQueue::sort()
+void TaskQueue::sortBy(enum sort_options options)
 {
-    qsort((void*) (&tasks[head]), count, sizeof(Task), sort_deadline_asc);
+    switch (options)
+    {
+    case deadline:
+        qsort((void*) (&tasks[head]), count, sizeof(Task), sort_deadline_asc);
+        break;
+    
+    case period:
+        qsort((void*) (&tasks[head]), count, sizeof(Task), sort_period_asc);
+        break;
+
+    default:
+        break;
+    }
 }
 
 int TaskQueue::sort_deadline_asc(const void* t1, const void* t2)
@@ -69,4 +81,17 @@ int TaskQueue::sort_deadline_asc(const void* t1, const void* t2)
     Task* task2 = (Task*) t2;
 
     return (task1->deadline - task2->deadline);
+}
+
+int TaskQueue::sort_period_asc(const void* t1, const void* t2)
+{
+    Task* task1 = (Task*) t1;
+    Task* task2 = (Task*) t2;
+
+    return (task1->period - task2->period);
+}
+
+Task TaskQueue::peek()
+{
+    return tasks[head];
 }

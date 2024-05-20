@@ -1,26 +1,21 @@
+/*
 #ifndef SCHEDULER_H_
 #define SCHEDULER_H_
 
 #include <task_queue.h>
-#include <Arduino.h>
 
-class Scheduler {
+extern int tickCount;
 
-    private:
-        TaskQueue* idleQueue;
-        TaskQueue* oldQueue;
-        TaskQueue* readyQueue;
+static TaskQueue* idleQueue;
+extern TaskQueue* oldReadyQueue;
+extern TaskQueue* readyQueue;
 
-        int tick;
-
-    public:
-        Scheduler();
-        ~Scheduler();
-
-        void schedule();
-        void setIdleQueue(TaskQueue* q);
-        void dispatch();
-        void incrementTick();
-};
+void incrementTick() __attribute__ (( naked ));
+void setCurrentTask(Task* task);
+void setIdleQueue(TaskQueue* q);
+void setReadyQueue(TaskQueue* q);
+void checkIfReady() __attribute__ (( naked ));
+void switchTask() __attribute__ (( naked ));
 
 #endif
+*/

@@ -13,12 +13,11 @@ class Scheduler{
       taskQueue(taskQueue){};
     
     inline pcb_t* getCurrentPcb(){
-      //implement
-      return nullptr;
+      return currTask->getPcb();
     }
 
     inline void storeCurrentPcb(pcb_t* pcb){
-      //implement
+      currTask->setPcb(pcb);
     }
 };
 

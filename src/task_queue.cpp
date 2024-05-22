@@ -1,13 +1,13 @@
 #include <task_queue.h>
 
-TaskQueue::TaskQueue(int size = SIZE)
+TaskQueue::TaskQueue(int size = TASK_NO)
 {
-    capacity = SIZE;
+    capacity = TASK_NO;
     head = 0;
     tail = -1;
     count = 0;
 
-    tasks = new Task[SIZE];
+    tasks = new Task[TASK_NO];
 }
 
 TaskQueue::~TaskQueue()
@@ -77,16 +77,16 @@ void TaskQueue::sortBy(enum sort_options options)
 
 int TaskQueue::sort_deadline_asc(const void* t1, const void* t2)
 {
-    Task* task1 = (Task*) t1;
-    Task* task2 = (Task*) t2;
+    TaskImpl* task1 = ((Task*) t1)->getTask();
+    TaskImpl* task2 = ((Task*) t2)->getTask();
 
     return (task1->deadline - task2->deadline);
 }
 
 int TaskQueue::sort_period_asc(const void* t1, const void* t2)
 {
-    Task* task1 = (Task*) t1;
-    Task* task2 = (Task*) t2;
+    TaskImpl* task1 = ((Task*) t1)->getTask();
+    TaskImpl* task2 = ((Task*) t2)->getTask();
 
     return (task1->period - task2->period);
 }

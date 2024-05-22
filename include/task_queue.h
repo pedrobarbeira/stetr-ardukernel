@@ -5,8 +5,6 @@
 #include <task.h>
 #include <Arduino.h>
 
-#define SIZE 100
-
 class TaskQueue {
     private:
         int head;
@@ -20,7 +18,7 @@ class TaskQueue {
         static int sort_period_asc(const void* t1, const void* t2);
 
     public:
-        TaskQueue(int size = SIZE);
+        TaskQueue(int size = TASK_NO);
         ~TaskQueue();
 
         bool isEmpty();

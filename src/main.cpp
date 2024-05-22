@@ -1,4 +1,4 @@
-#include <Arduino.h>
+
 #include <scheduler.h>
 #include <task_queue.h>
 #include <utils.h>
@@ -6,9 +6,12 @@
 TaskQueue* idleQueue;
 Scheduler* scheduler;
 
-void print()
-{
-  Serial.println("Test task code");
+void task_1(){
+  Serial.print("Executing task 1\n");
+}
+
+void task_2(){
+  Serial.print("Executing task 2\n");
 }
 
 void setup()
@@ -20,8 +23,8 @@ void setup()
   scheduler = new Scheduler();
 
   idleQueue = new TaskQueue();
-  idleQueue->enqueue(new Task{1, 1, 4, print});
-  idleQueue->enqueue(new Task{2, 2, 3, print});
+  idleQueue->enqueue(new Task{1, 1, 4, task_1});
+  idleQueue->enqueue(new Task{2, 2, 3, task_2});
 
   scheduler->setIdleQueue(idleQueue);
 }

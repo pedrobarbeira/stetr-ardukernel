@@ -1,6 +1,8 @@
 #include <utils.h>
 
 /**
+ * @brief Sets up Timer 1 interrupts to trigger every second
+ * 
  * Why use the prescalar?
  * Since the CPU runs ate 16MHz, a timer would increase by one every 1/16MHz seconds
  * Timer1 can only count up to 2^16 so, if we want to count up to a value > 2^16, we use a prescalar

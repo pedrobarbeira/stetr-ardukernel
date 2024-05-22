@@ -20,10 +20,11 @@ Task::~Task(){
   delete task;
 }
 
-TaskImpl* Task::getTask(){
-  return this->task;
-}
+Task** Task::buildTaskList(){
+  Task** tasks = new Task*[TASK_NO];
 
-Task* Task::buildTaskList(){
-  Task[] tasks = new Task[TASK_NO];
+  tasks[0] = new Task(new TaskImpl{0, 2, 10, WAITING, task_1});
+  tasks[1] = new Task(new TaskImpl{1, 5, 11, WAITING, task_2});
+  tasks[2] = new Task(new TaskImpl{2, 6, 12, WAITING, task_3});
+  tasks[3] = new Task(new TaskImpl{3, 4, 13, WAITING, task_4});
 }

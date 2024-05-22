@@ -8,10 +8,19 @@
 typedef void(*routine_t)(void);
 typedef struct Task Task;
 
+enum State
+{
+    WAITING,
+    READY,
+    BLOCKED,
+    RUNNING,
+};
+
 typedef struct TaskImpl {
     int id;
     float period;
     int deadline;
+    enum State state;
     routine_t routine;
 } TaskImpl;
 
@@ -26,9 +35,47 @@ class Task{
         Task(){};
         ~Task();
 
-        static Task* buildTaskList();
+        static Task** buildTaskList();
 
-        TaskImpl* getTask();
+        inline void setWaiting(){
+            this->task->state = WAITING;
+        }
+
+        inline void setReady(){
+            this->task->state = READY;
+        }
+
+        inline void setBlocked(){
+            this->task->state = BLOCKED;
+        }
+
+        inline void setRunning(){
+            this->task->state = RUNNING;
+        }
+
+        inline bool isReady(){
+            return this->task->state == READY;
+        }
+
+        inline bool isWaiting(){
+            return this->task->state == WAITING;
+        }
+
+        inline void execute(){
+            this->task->routine();
+        }
+
+        inline TaskImpl* getTask(){
+            return this->task;
+        }
+
+        inline uint8_t* getCurrentTcb(){
+            return (uint8_t*) this->task->routine;
+        }
+
+        inline int getId(){
+            return this->task->id;
+        }
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 #include <utils.h>
 #include <task.h>
-#include <Arduino.h>
+#include <stdlib.h>
 
 class TaskQueue {
     private:
@@ -12,8 +12,7 @@ class TaskQueue {
         int capacity;
         int count;
 
-        Task* tasks;
-        void increase_size();
+        Task** tasks;
         static int sort_deadline_asc(const void* t1, const void* t2);
         static int sort_period_asc(const void* t1, const void* t2);
 
@@ -24,10 +23,11 @@ class TaskQueue {
         bool isEmpty();
         bool isFull();
         void enqueue(Task* t);
-        Task dequeue();
+        Task* dequeue();
         int size();
         void sortBy(enum sort_options);
-        Task peek();
+        Task* peek();
+        Task** getAllTasks();
 };
 
 #endif

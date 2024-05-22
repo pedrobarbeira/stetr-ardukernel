@@ -1,51 +1,77 @@
+/*
 #include <scheduler.h>
 
-Scheduler::Scheduler()
-{
-    idleQueue = nullptr;
-    readyQueue = nullptr;
-    oldQueue = nullptr;
+TaskQueue* oldReadyQueue = nullptr;
+TaskQueue* readyQueue = nullptr;
+uint8_t* pxCurrentTCB = nullptr;
+int tickCount = 0;
 
-    tick = 0;
+void incrementTick()
+{
+    Serial.println("Increment tick");
+    Serial.println(tickCount);
+    
+    if(tickCount++ >= INT32_MAX)
+        tickCount = 0;
+
+    tickCount++;
+    
+
+    checkIfReady();
+
+    asm volatile ("ret");
 }
 
-Scheduler::~Scheduler()
+void switchTask()
 {
-    delete idleQueue;
-    delete readyQueue;
-    delete oldQueue;
-}
-
-void Scheduler::schedule()
-{   
-    int size = readyQueue->size();
-
-    oldQueue = readyQueue;
-    readyQueue->sortBy(deadline);
-
-    for (int i = 0; i < size; i++)
+    Serial.println("Switch task");
+    if (pxCurrentTCB == nullptr && !readyQueue->isEmpty())
     {
-        Task t = readyQueue->peek();
-        Serial.println(t.deadline);
+        Serial.println("First run");
+        readyQueue->sortBy(deadline);
+        Task* currentTask = readyQueue->dequeue();
+        oldReadyQueue = readyQueue;
+        pxCurrentTCB = (uint8_t*) currentTask->routine;
+    }
+    else if (oldReadyQueue->peek().id != readyQueue->peek().id)
+    {
+        Serial.println("Task with higher priority activated");
+        readyQueue->sortBy(deadline);
+        Task* currentTask = readyQueue->dequeue();
+        oldReadyQueue = readyQueue;
+        pxCurrentTCB = (uint8_t*) currentTask->routine;
     }
 }
 
-void Scheduler::setIdleQueue(TaskQueue* q)
+void setCurrentTask(Task* task)
+{
+    pxCurrentTCB = (uint8_t*) task->routine;
+}
+
+void checkIfReady()
+{
+    Task* tasks = idleQueue->getAllTasks();
+
+    for(int i = 0; i < idleQueue->size(); i++)
+    {
+        Task t = tasks[i];
+
+        if(t.state == ready)
+        {
+            readyQueue->enqueue(&t);
+        }
+    }
+
+    asm volatile ("ret");
+}
+
+void setIdleQueue(TaskQueue* q)
 {
     idleQueue = q;
 }
 
-void Scheduler::dispatch()
+void setReadyQueue(TaskQueue* q)
 {
-    if (oldQueue->peek().id != readyQueue->peek().id)
-        return;
-
-    Task t = readyQueue->dequeue();
-
-    t.routine();
+    readyQueue = q;
 }
-
-void Scheduler::incrementTick()
-{
-    tick++;
-}
+*/

@@ -1,14 +1,20 @@
 #ifndef _LOAD_BALANCER_H
 #define _LOAD_BALANCER_H
 
+#include "task_queue.h";
+
 class LoadBalancer{
   private:
-    //thread pool
-  
-    LoadBalancer();
-    ~LoadBalancer();
+    Task** tasks;
+    
   public:
-    static LoadBalancer Create();
+    explicit LoadBalancer(Task** tasks):
+      tasks(tasks){};
+
+    TaskQueue** balanceQueues(int queueNo);
+
+    ~LoadBalancer();
+
 
 };
 

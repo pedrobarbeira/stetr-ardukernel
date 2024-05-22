@@ -28,3 +28,33 @@ Task** Task::buildTaskList(){
   tasks[2] = new Task(new TaskImpl{2, 6, 12, WAITING, task_3});
   tasks[3] = new Task(new TaskImpl{3, 4, 13, WAITING, task_4});
 }
+
+/**
+ * @brief Sorts a queue by ascending deadline
+ * 
+ * @param t1 First Task to compare
+ * @param t2 Second Task to compare
+ * @return int Negative if t1 is less than t2; 0 if they are equal; Positive if t1 is greater than t2
+ */
+int Task::sort_deadline_asc(const void* t1, const void* t2)
+{
+    TaskImpl* task1 = ((Task*) t1)->task;
+    TaskImpl* task2 = ((Task*) t2)->task;
+
+    return (task1->deadline - task2->deadline);
+}
+
+/**
+ * @brief Sorts a queue by ascending period
+ * 
+ * @param t1 First Task to compare
+ * @param t2 Second Task to compare
+ * @return int Negative if t1 is less than t2; 0 if they are equal; Positive if t1 is greater than t2
+ */
+int Task::sort_period_asc(const void* t1, const void* t2)
+{
+    TaskImpl* task1 = ((Task*) t1)->task;
+    TaskImpl* task2 = ((Task*) t2)->task;
+
+    return (task1->period - task2->period);
+}

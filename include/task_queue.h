@@ -13,9 +13,6 @@ class TaskQueue {
         int count;
 
         Task** tasks;
-        static int sort_deadline_asc(const void* t1, const void* t2);
-        static int sort_period_asc(const void* t1, const void* t2);
-
     public:
         TaskQueue(int size = TASK_NO);
         ~TaskQueue();

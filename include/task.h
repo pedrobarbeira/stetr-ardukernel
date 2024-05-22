@@ -36,7 +36,9 @@ class Task{
         ~Task();
 
         static Task** buildTaskList();
-
+        static int sort_deadline_asc(const void* t1, const void* t2);
+        static int sort_period_asc(const void* t1, const void* t2);
+        
         inline void setWaiting(){
             this->task->state = WAITING;
         }
@@ -63,10 +65,6 @@ class Task{
 
         inline void execute(){
             this->task->routine();
-        }
-
-        inline TaskImpl* getTask(){
-            return this->task;
         }
 
         inline uint8_t* getCurrentTcb(){

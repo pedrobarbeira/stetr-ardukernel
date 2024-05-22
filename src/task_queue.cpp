@@ -104,46 +104,16 @@ void TaskQueue::sortBy(enum sort_options options)
     switch (options)
     {
         case deadline:
-            qsort((void*) (&tasks[head]), count, sizeof(Task), sort_deadline_asc);
+            qsort((void*) (&tasks[head]), count, sizeof(Task), Task::sort_deadline_asc);
             break;
         
         case period:
-            qsort((void*) (&tasks[head]), count, sizeof(Task), sort_period_asc);
+            qsort((void*) (&tasks[head]), count, sizeof(Task), Task::sort_period_asc);
             break;
 
         default:
             break;
     }
-}
-
-/**
- * @brief Sorts a queue by ascending deadline
- * 
- * @param t1 First Task to compare
- * @param t2 Second Task to compare
- * @return int Negative if t1 is less than t2; 0 if they are equal; Positive if t1 is greater than t2
- */
-int TaskQueue::sort_deadline_asc(const void* t1, const void* t2)
-{
-    TaskImpl* task1 = ((Task*) t1)->getTask();
-    TaskImpl* task2 = ((Task*) t2)->getTask();
-
-    return (task1->deadline - task2->deadline);
-}
-
-/**
- * @brief Sorts a queue by ascending period
- * 
- * @param t1 First Task to compare
- * @param t2 Second Task to compare
- * @return int Negative if t1 is less than t2; 0 if they are equal; Positive if t1 is greater than t2
- */
-int TaskQueue::sort_period_asc(const void* t1, const void* t2)
-{
-    TaskImpl* task1 = ((Task*) t1)->getTask();
-    TaskImpl* task2 = ((Task*) t2)->getTask();
-
-    return (task1->period - task2->period);
 }
 
 /**

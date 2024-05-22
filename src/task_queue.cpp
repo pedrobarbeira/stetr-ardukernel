@@ -35,7 +35,7 @@ TaskQueue::~TaskQueue()
  */
 bool TaskQueue::isEmpty()
 {
-    return TaskQueue::size == 0;
+    return this->count == 0;
 }
 
 /**

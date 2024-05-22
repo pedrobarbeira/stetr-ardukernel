@@ -4,22 +4,26 @@
 #include "task_queue.h"
 #include "scheduler.h"
 
-typedef struct pcb_t{
-
-}pcb_t;
-
 class Thread{
   private:
-    TaskQueue* taskQueue;
-    //should have scheduler
-    pcb_t* pcb;
+    Scheduler* scheduler;
+    int tickCount;
 
   public:
-    explicit Thread(TaskQueue* taskQueue):
-      taskQueue(taskQueue){};
+    explicit Thread(Scheduler* scheduler):
+      scheduler(scheduler), tickCount(0){};
 
-    void activateThread();
-    void deactivateThread();
+    inline pcb_t* activateThread(){
+      return this->scheduler->getCurrentPcb();
+    };
+
+    inline void deactivateThread(pcb_t* pcb){
+      this->scheduler->storeCurrentPcb(pcb);
+    };
+
+    inline void incrementTick(){
+      tickCount++;
+    }
 
     ~Thread();
 };

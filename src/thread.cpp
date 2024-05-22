@@ -1,6 +1,5 @@
 #include "thread.h"
 
 Thread::~Thread(){
-  delete taskQueue;
-
+  delete this->scheduler;
 }

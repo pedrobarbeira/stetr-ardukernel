@@ -8,6 +8,10 @@
 typedef void(*routine_t)(void);
 typedef struct Task Task;
 
+typedef struct pcb_t{
+
+}pcb_t;
+
 enum State
 {
     WAITING,
@@ -22,6 +26,7 @@ typedef struct TaskImpl {
     int deadline;
     enum State state;
     routine_t routine;
+    pcb_t* pcb;
 } TaskImpl;
 
 class Task{
@@ -73,6 +78,14 @@ class Task{
 
         inline int getId(){
             return this->task->id;
+        }
+
+        inline pcb_t* getPcb(){
+            return this->task->pcb;
+        }
+
+        inline void setPcb(pcb_t* pcb){
+            this->task->pcb = pcb;
         }
 };
 

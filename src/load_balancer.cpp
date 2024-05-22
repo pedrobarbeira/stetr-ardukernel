@@ -42,7 +42,8 @@ Thread** LoadBalancer::buildThreads(int threadNo){
   TaskQueue** queues = this->buildQueues(threadNo);
 
   for(int i = 0; i < threadNo; i++){
-    threads[i] = new Thread(queues[i]);
+    Scheduler* scheduler = new Scheduler(queues[i]);
+    threads[i] = new Thread(scheduler);
   }
 
   return threads;

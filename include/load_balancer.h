@@ -12,6 +12,7 @@ class LoadBalancer{
     
     TaskQueue** initializeQueues(int threadNo);
     TaskQueue** buildQueues(int threadNo);
+    
   public:
     explicit LoadBalancer(Task** tasks):
       tasks(tasks), nextThread(0), threadNo(1){};

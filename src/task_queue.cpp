@@ -10,7 +10,7 @@ TaskQueue::TaskQueue(int size = TASK_NO)
     capacity = TASK_NO;
     head = 0;
     tail = -1;
-    count = 0;
+    size = 0;
 
     tasks = new Task*[TASK_NO];
 }
@@ -21,6 +21,9 @@ TaskQueue::TaskQueue(int size = TASK_NO)
  */
 TaskQueue::~TaskQueue()
 {
+    for(int i = 0; i < this->size(); i++){
+        delete tasks[i];
+    }
     delete tasks;
 }
 
@@ -32,7 +35,7 @@ TaskQueue::~TaskQueue()
  */
 bool TaskQueue::isEmpty()
 {
-    return TaskQueue::count == 0;
+    return TaskQueue::size == 0;
 }
 
 /**

@@ -10,6 +10,7 @@ LoadBalancer::~LoadBalancer(){
 TaskQueue** LoadBalancer::initializeQueues(int queueNo){
   int tasksPerQueue = TASK_NO / queueNo;
   int remainder = TASK_NO % queueNo;
+  this->nextThread = remainder;
   
   TaskQueue** queue = new TaskQueue*[queueNo];
   
@@ -24,7 +25,8 @@ TaskQueue** LoadBalancer::initializeQueues(int queueNo){
   return queue;
 }
 
-TaskQueue** LoadBalancer::balanceQueues(int queueNo){
+//ths should probably return Schedule**
+TaskQueue** LoadBalancer::buildQueues(int queueNo){
   TaskQueue** queues = initializeQueues(queueNo);
 
   int queueIdx =0 ;
@@ -32,6 +34,16 @@ TaskQueue** LoadBalancer::balanceQueues(int queueNo){
     queueIdx = TASK_NO % queueNo;
     queues[queueIdx]->enqueue(tasks[i]);
   }
-
   return queues;
+}
+
+Thread** LoadBalancer::buildThreads(int threadNo){
+  Thread** threads = new Thread*[threadNo];
+  TaskQueue** queues = this->buildQueues(threadNo);
+
+  for(int i = 0; i < threadNo; i++){
+    threads[i] = new Thread(queues[i]);
+  }
+
+  return threads;
 }

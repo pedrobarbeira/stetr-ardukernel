@@ -7,15 +7,17 @@
 class Hypervisor{
   private:
     LoadBalancer* loadBalancer;
-    TaskQueue** queues;
-    int queueNo;
-    int currQueue;
+    Thread** threads;
+    int threadNo;
+    int currThread;
 
   public:
     explicit Hypervisor(LoadBalancer* loadBalancer, int queueNo):
-      loadBalancer(loadBalancer), queueNo(queueNo), currQueue(0){
-        queues = loadBalancer->balanceQueues(this->queueNo);
+      loadBalancer(loadBalancer), threadNo(queueNo), currThread(0){
+        threads = loadBalancer->buildThreads(this->threadNo);
       };
+
+      ~Hypervisor();
 };
 
 #endif _HYPERVISOR_H_

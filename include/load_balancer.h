@@ -4,6 +4,7 @@
 #include "task_queue.h"
 #include "thread.h"
 
+//will be inlined in hypervisor
 class LoadBalancer{
   private:
     Task** tasks;

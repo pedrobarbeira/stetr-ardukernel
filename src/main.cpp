@@ -1,4 +1,5 @@
 #include <task_queue.h>
+#include "hypervisor.h"
 
 TaskQueue* idleQueue = nullptr;
 TaskQueue* oldReadyQueue = nullptr;
@@ -133,25 +134,25 @@ void setup()
     Serial.begin(9600);
 
     while (!Serial);
-    Serial.println("TEST");
+    Serial.println("We are live");
 
     config_timer1_interrupts();
 
-    idleQueue = new TaskQueue();
-    idleQueue->enqueue(task1);
-    idleQueue->enqueue(task2);
+    // idleQueue = new TaskQueue();
+    // idleQueue->enqueue(task1);
+    // idleQueue->enqueue(task2);
 
-    tickCount = 0;
-    pxCurrentTCB = (uint8_t*) print1;
+    // tickCount = 0;
+    // pxCurrentTCB = (uint8_t*) print1;
 }
 
 void loop()
 {
-    if(task1->isWaiting())
-    {
-        delay(3000);
-        task1->setReady();
-    }
+    // if(task1->isWaiting())
+    // {
+    //     delay(3000);
+    //     task1->setReady();
+    // }
     /*
     else if(task2->state == waiting)
     {
@@ -161,17 +162,32 @@ void loop()
     */
 }
 
+void mock_task_1(){
+    while(1){
+        Serial.println("Printing task 1");
+        delay(200);
+    }
+}
+
+void mock_task_2(){
+    while(1){
+        Serial.println("Printing task 2");
+        delay(400);
+    }
+}
+
+int task = 0;
+uint16_t task1sp = 0;
+uint16_t task2sp = 0;
+
 /**
  * @brief Construct a new ISR object to handle Timer 1 interrupts.
  * It is a naked function, because context switching may occur 
  * and we need to save and restore the context manually
  */
-ISR(TIMER1_COMPA_vect, ISR_NAKED)
+ISR(TIMER1_COMPA_vect)
 {
-
-    vPortYieldFromTick();
-
-    asm volatile ("reti");
+    
 }
 
 /**

@@ -7,18 +7,19 @@
 class Thread{
   private:
     Scheduler* scheduler;
+    uint16_t stackPointer;
     int tickCount;
 
   public:
     explicit Thread(Scheduler* scheduler):
       scheduler(scheduler), tickCount(0){};
 
-    inline pcb_t* activateThread(){
-      return this->scheduler->getCurrentPcb();
+    inline uint16_t activateThread(){
+      return this->stackPointer;
     };
 
-    inline void deactivateThread(pcb_t* pcb){
-      this->scheduler->storeCurrentPcb(pcb);
+    inline void deactivateThread(uint16_t sp){
+      this->stackPointer = sp;
     };
 
     inline void incrementTick(){

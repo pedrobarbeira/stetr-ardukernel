@@ -9,7 +9,9 @@ typedef void(*routine_t)(void);
 typedef struct Task Task;
 
 typedef struct pcb_t{
-
+    uint16_t pc;
+    uint16_t sp;
+    uint8_t r[32];
 }pcb_t;
 
 enum State

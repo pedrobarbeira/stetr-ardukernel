@@ -4,91 +4,37 @@
 #include "Arduino.h"
 
 #define TASK_NO 100
+#define STACK_SIZE 128
 
 typedef void(*routine_t)(void);
-typedef struct Task Task;
 
-typedef struct pcb_t{
-    uint16_t pc;
-    uint16_t sp;
-    uint8_t r[32];
-}pcb_t;
-
-enum State
-{
+enum State{
     WAITING,
     READY,
     BLOCKED,
     RUNNING,
 };
 
-typedef struct TaskImpl {
-    int id;
+typedef struct tcb_t{
     float period;
     int deadline;
     enum State state;
-    routine_t routine;
-    pcb_t* pcb;
-} TaskImpl;
+}tcb_t;
 
-class Task{
-    private:
-        TaskImpl* task;
+typedef struct Task {
+    uint16_t stackptr;
+    uint8_t* stackbase;
+    tcb_t* tcb;
 
-        explicit Task(TaskImpl* task):
-            task(task){};
+    ~Task(){
+        delete stackbase;
+        delete tcb;
+    }
+} Task;
 
-    public:
-        Task(){};
-        ~Task();
-
-        static Task** buildTaskList();
-        static int sort_deadline_asc(const void* t1, const void* t2);
-        static int sort_period_asc(const void* t1, const void* t2);
-        
-        inline void setWaiting(){
-            this->task->state = WAITING;
-        }
-
-        inline void setReady(){
-            this->task->state = READY;
-        }
-
-        inline void setBlocked(){
-            this->task->state = BLOCKED;
-        }
-
-        inline void setRunning(){
-            this->task->state = RUNNING;
-        }
-
-        inline bool isReady(){
-            return this->task->state == READY;
-        }
-
-        inline bool isWaiting(){
-            return this->task->state == WAITING;
-        }
-
-        inline void execute(){
-            this->task->routine();
-        }
-
-        inline uint8_t* getCurrentTcb(){
-            return (uint8_t*) this->task->routine;
-        }
-
-        inline int getId(){
-            return this->task->id;
-        }
-
-        inline pcb_t* getPcb(){
-            return this->task->pcb;
-        }
-
-        inline void setPcb(pcb_t* pcb){
-            this->task->pcb = pcb;
-        }
-};
+Task* buildTask(uint8_t* stackbase, float period, int deadline, State state, routine_t routine);
+Task** buildTaskList(uint8_t** stackSpace);
+int sort_deadline_asc(const void* t1, const void* t2);
+int sort_period_asc(const void* t1, const void* t2);
 
 #endif

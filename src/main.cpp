@@ -14,120 +14,35 @@ void switchTask();// __attribute__ (( naked ));
 void setup(void);
 void loop(void);
 
-void print1();
-void print2();
+Task** tasks;
+int taskNum = 4;
+int currTask = 0;
 
-#define SAVE_CONTEXT()                      \
-    asm volatile (                          \
-        "push r0                      \n\t" \
-        "in r0, __SREG__              \n\t" \
-        "cli                          \n\t" \
-        "push r0                      \n\t" \
-        "push r1                      \n\t" \
-        "clr  r1                      \n\t" \
-        "push r2                      \n\t" \
-        "push r3                      \n\t" \
-        "push r4                      \n\t" \
-        "push r5                      \n\t" \
-        "push r6                      \n\t" \
-        "push r7                      \n\t" \
-        "push r8                      \n\t" \
-        "push r9                      \n\t" \
-        "push r10                     \n\t" \
-        "push r11                     \n\t" \
-        "push r12                     \n\t" \
-        "push r13                     \n\t" \
-        "push r14                     \n\t" \
-        "push r15                     \n\t" \
-        "push r16                     \n\t" \
-        "push r17                     \n\t" \
-        "push r18                     \n\t" \
-        "push r19                     \n\t" \
-        "push r20                     \n\t" \
-        "push r21                     \n\t" \
-        "push r22                     \n\t" \
-        "push r23                     \n\t" \
-        "push r24                     \n\t" \
-        "push r25                     \n\t" \
-        "push r26                     \n\t" \
-        "push r27                     \n\t" \
-        "push r28                     \n\t" \
-        "push r29                     \n\t" \
-        "push r30                     \n\t" \
-        "push r31                     \n\t" \
-        "lds r26, %0                  \n\t" \
-        "lds r27, %0 + 1              \n\t" \
-        "in r0, __SP_L__              \n\t" \
-        "st x+, r0                    \n\t" \
-        "in r0, __SP_H__              \n\t" \
-        "st x+, r0                    \n\t" \
-        :                                   \
-        : "m" (pxCurrentTCB) \
-    );
+static uint8_t space1[128];
+static uint8_t space2[128];
+static uint8_t space3[128];
+static uint8_t space4[128];
 
-#define RESTORE_CONTEXT()                   \
-    asm volatile (                          \
-        "lds r26, %0                  \n\t" \
-        "lds r27, %0 + 1              \n\t" \
-        "ld  r28, x+                  \n\t" \
-        "out __SP_L__, r28            \n\t" \
-        "ld  r29, x+                  \n\t" \
-        "out __SP_H__, r29            \n\t" \
-        "pop r31                      \n\t" \
-        "pop r30                      \n\t" \
-        "pop r29                      \n\t" \
-        "pop r28                      \n\t" \
-        "pop r27                      \n\t" \
-        "pop r26                      \n\t" \
-        "pop r25                      \n\t" \
-        "pop r24                      \n\t" \
-        "pop r23                      \n\t" \
-        "pop r22                      \n\t" \
-        "pop r21                      \n\t" \
-        "pop r20                      \n\t" \
-        "pop r19                      \n\t" \
-        "pop r18                      \n\t" \
-        "pop r17                      \n\t" \
-        "pop r16                      \n\t" \
-        "pop r15                      \n\t" \
-        "pop r14                      \n\t" \
-        "pop r13                      \n\t" \
-        "pop r12                      \n\t" \
-        "pop r11                      \n\t" \
-        "pop r10                      \n\t" \
-        "pop r9                       \n\t" \
-        "pop r8                       \n\t" \
-        "pop r7                       \n\t" \
-        "pop r6                       \n\t" \
-        "pop r5                       \n\t" \
-        "pop r4                       \n\t" \
-        "pop r3                       \n\t" \
-        "pop r2                       \n\t" \
-        "pop r1                       \n\t" \
-        "pop r0                       \n\t" \
-        "out __SREG__, r0             \n\t" \
-        "pop r0                       \n\t" \
-        :                                   \
-        : "m" (pxCurrentTCB) \
-    );
+uint8_t* stackspace[4] = {
+    space1, space2, space3, space4
+};
 
-Task* task1 = new Task();
-
-Task* task2 = new Task();
-
-void print1()
-{
-    Serial.println("Task 1");
-    delay(3000);
-    task1->setWaiting();
+void mock_task_1(){
+    while(1){
+        Serial.println("Printing task 1");
+        delay(200);
+    }
 }
 
-void print2()
-{
-    Serial.println("Task 2");
-    delay(2000);
-    task2->setWaiting();
+void mock_task_2(){
+    while(1){
+        Serial.println("Printing task 2");
+        delay(400);
+    }
 }
+
+TaskImpl* task1;
+TaskImpl* task2;
 
 void setup()
 {
@@ -138,12 +53,17 @@ void setup()
 
     config_timer1_interrupts();
 
-    // idleQueue = new TaskQueue();
-    // idleQueue->enqueue(task1);
-    // idleQueue->enqueue(task2);
+    task1 = buildTask(space1, 2, 10, WAITING, mock_task_1);
+    task2 = buildTask(space2, 2, 10, WAITING, mock_task_2);
 
-    // tickCount = 0;
-    // pxCurrentTCB = (uint8_t*) print1;
+    Serial.print((uint16_t) space1);
+    Serial.println(task1->stackptr);
+    Serial.print((uint16_t) space2);
+    Serial.println(task2->stackptr);
+
+    delay(200);
+
+    Hypervisor::restoreCtx(task1->stackptr);
 }
 
 void loop()
@@ -162,20 +82,6 @@ void loop()
     */
 }
 
-void mock_task_1(){
-    while(1){
-        Serial.println("Printing task 1");
-        delay(200);
-    }
-}
-
-void mock_task_2(){
-    while(1){
-        Serial.println("Printing task 2");
-        delay(400);
-    }
-}
-
 int task = 0;
 uint16_t task1sp = 0;
 uint16_t task2sp = 0;
@@ -185,9 +91,14 @@ uint16_t task2sp = 0;
  * It is a naked function, because context switching may occur 
  * and we need to save and restore the context manually
  */
-ISR(TIMER1_COMPA_vect)
-{
-    
+ISR(TIMER1_COMPA_vect){
+    // Task* task = tasks[currTask];
+    // uint16_t sp = Hypervisor::saveCtx();
+    // task->setStackPtr(sp);
+
+    // currTask = (++currTask) % taskNum;
+    // task = tasks[currTask];
+    // Hypervisor::restoreCtx(task->getStackPointer());
 }
 
 /**
@@ -211,25 +122,25 @@ void incrementTick()
  */
 void switchTask()
 {
-    Serial.println("Switch task");
-    if (pxCurrentTCB == nullptr && !readyQueue->isEmpty())
-    {
-        Serial.println("First run");
-        readyQueue->sortBy(deadline);
-        Task* currentTask = readyQueue->dequeue();
-        oldReadyQueue = readyQueue;
-        currentTask->setRunning();
-        pxCurrentTCB = currentTask->getCurrentTcb();
-    }
-    else if (oldReadyQueue->peek()->getId() != readyQueue->peek()->getId())
-    {
-        Serial.println("Task with higher priority activated");
-        readyQueue->sortBy(deadline);
-        Task* currentTask = readyQueue->dequeue();
-        oldReadyQueue = readyQueue;
-        currentTask->setRunning();
-        pxCurrentTCB = currentTask->getCurrentTcb();
-    }
+    // Serial.println("Switch task");
+    // if (pxCurrentTCB == nullptr && !readyQueue->isEmpty())
+    // {
+    //     Serial.println("First run");
+    //     readyQueue->sortBy(deadline);
+    //     Task* currentTask = readyQueue->dequeue();
+    //     oldReadyQueue = readyQueue;
+    //     currentTask->setRunning();
+    //     pxCurrentTCB = currentTask->getCurrentTcb();
+    // }
+    // else if (oldReadyQueue->peek()->getId() != readyQueue->peek()->getId())
+    // {
+    //     Serial.println("Task with higher priority activated");
+    //     readyQueue->sortBy(deadline);
+    //     Task* currentTask = readyQueue->dequeue();
+    //     oldReadyQueue = readyQueue;
+    //     currentTask->setRunning();
+    //     pxCurrentTCB = currentTask->getCurrentTcb();
+    // }
 }
 
 /**
@@ -258,13 +169,4 @@ void checkIfReady()
 void vPortYieldFromTick()
 {
 
-    SAVE_CONTEXT();
-
-    incrementTick();
-
-    //switchTask();
-
-    RESTORE_CONTEXT();
-
-    asm volatile("ret");
 }

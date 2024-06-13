@@ -1,100 +1,54 @@
 #include <task_queue.h>
 
-/**
- * @brief Construct a new Task Queue:: Task Queue object
- * 
- * @param size Queue size
- */
-TaskQueue::TaskQueue(int size = TASK_NO)
-{
-    capacity = TASK_NO;
-    head = 0;
-    tail = -1;
-    size = 0;
-
-    tasks = new Task*[TASK_NO];
+// Function to initialize the queue
+void initializeQueue(Queue *q) {
+    q->front = -1;
+    q->rear = -1;
 }
 
-/**
- * @brief Destroy the Task Queue:: Task Queue object
- * 
- */
-TaskQueue::~TaskQueue()
-{
-    for(int i = 0; i < this->size(); i++){
-        delete tasks[i];
-    }
-    delete tasks;
+// Function to check if the queue is full
+int isFull(Queue *q) {
+    if(q->rear == MAX_SIZE - 1)
+        return 1;
+    else
+        return 0;
 }
 
-/**
- * @brief Checks if the queue is empty
- * 
- * @return true when empty
- * @return false when not empty
- */
-bool TaskQueue::isEmpty()
-{
-    return this->count == 0;
+// Function to check if the queue is empty
+int isEmpty(Queue *q) {
+    if(q->front == -1 || q->front > q->rear)
+        return 1;
+    else
+        return 0;
 }
 
-/**
- * @brief Checks if the queue if full
- * 
- * @return true when full
- * @return false when not full
- */
-bool TaskQueue::isFull()
-{
-    return TaskQueue::head == capacity - 1;
-}
-
-/**
- * @brief Adds a new task to the queue
- * 
- * @param t The new task to be added 
- */
-void TaskQueue::enqueue(Task* t)
-{
-    if (isFull())
-    {
+// Function to add an element to the queue
+void enqueue(Queue *q, Task task) {
+    if(isFull(q)) {
         return;
+    } else {
+        if(q->front == -1)
+            q->front = 0;
+
+        q->rear++;
+        q->items[q->rear] = task;
     }
-
-    tail = (tail + 1) % capacity;
-
-    tasks[tail] = t;
-    count++;
 }
 
-/**
- * @brief Retrieves the Task in the head of the queue and removes it
- * 
- * @return Task* The Task in the head of the queue
- */
-Task* TaskQueue::dequeue()
-{
-    if (isEmpty())
-    {
-        return nullptr;
+// Function to remove an element from the queue
+Task dequeue(Queue *q) {
+    Task task;
+    if(isEmpty(q)) {
+        item = -1;
+    } else {
+        item = q->items[q->front];
+        q->front++;
+
+        if(q->front > q->rear) {
+            q->front = q->rear = -1;
+        }
     }
- 
-    Task* task = tasks[head];
-
-    head = (head + 1) % capacity;
-    count--;
-
-    return task;
-}
-
-/**
- * @brief Gets the size of the queue
- * 
- * @return int The queue's size 
- */
-int TaskQueue::size()
-{
-    return count;
+    return item;
 }
 
 /**
@@ -102,39 +56,19 @@ int TaskQueue::size()
  * 
  * @param options The criteria used to sort the queue
  */
-void TaskQueue::sortBy(enum sort_options options)
+void sortBy(Queue *q, enum sort_options options)
 {
     switch (options)
     {
         case deadline:
-            qsort((void*) (&tasks[head]), count, sizeof(Task), Task::sort_deadline_asc);
+            qsort((void*) (q->items), q->rear, sizeof(Task), sort_deadline_asc);
             break;
         
         case period:
-            qsort((void*) (&tasks[head]), count, sizeof(Task), Task::sort_period_asc);
+            qsort((void*) (q->items), q->rear, sizeof(Task), sort_period_asc);
             break;
 
         default:
             break;
     }
-}
-
-/**
- * @brief Gets the Task in the head of the queue without removing it
- * 
- * @return Task* The Task in the head of the queue
- */
-Task* TaskQueue::peek()
-{
-    return tasks[head];
-}
-
-/**
- * @brief Gets all the Tasks in a queue
- * 
- * @return Task** An array of pointers to Tasks 
- */
-Task** TaskQueue::getAllTasks()
-{
-    return tasks;
 }

@@ -1,32 +1,64 @@
 #include "task.h"
 
-void task_1(){  
-  Serial.print("Executing task 1\n");
+void task_1(){
+  for(int i = 0; i < 5; i++){
+    Serial.print("Executing task 1\n");
+    delay(200);
+  }  
 }
 
 void task_2(){  
-  Serial.print("Executing task 2\n");
+  for(int i = 0; i < 5; i++){
+    Serial.print("Executing task 2\n");
+    delay(200);
+  }  
 }
 
 void task_3(){  
-  Serial.print("Executing task 3\n");
+  for(int i = 0; i < 5; i++){
+    Serial.print("Executing task 3\n");
+    delay(200);
+  }  
 }
 
 void task_4(){  
-  Serial.print("Executing task 4\n");
+  for(int i = 0; i < 5; i++){
+    Serial.print("Executing task 4\n");
+    delay(200);
+  }  
 }
 
-Task::~Task(){
-  delete task;
+
+Task* buildTask(uint8_t* stackbase, float period, int deadline, State state, routine_t routine){
+  tcb_t* tcb = new tcb_t{period, deadline, state};
+
+  uint8_t* ptr = (uint8_t*) (stackbase + STACK_SIZE - 1);
+  ptr[0] = 0;
+  ptr[-1] = 0;
+  ptr -= 2;
+
+  uint16_t entryAdd = (uint16_t) routine;
+  ptr[0] = (uint8_t) entryAdd;
+  ptr[-1] = (uint8_t) (entryAdd >> 8);
+  ptr -= 2;
+
+  for(int i = 0; i < 32; i++){
+    ptr[-i] = 0;
+  } 
+  ptr -= 32;
+  
+  uint16_t stackPtr = ((uint16_t) ptr);
+
+  return new Task{(uint16_t) stackPtr, stackbase, tcb};
 }
 
-Task** Task::buildTaskList(){
+Task** buildTaskList(uint8_t** stackSpace){
   Task** tasks = new Task*[TASK_NO];
 
-  tasks[0] = new Task(new TaskImpl{0, 2, 10, WAITING, task_1});
-  tasks[1] = new Task(new TaskImpl{1, 5, 11, WAITING, task_2});
-  tasks[2] = new Task(new TaskImpl{2, 6, 12, WAITING, task_3});
-  tasks[3] = new Task(new TaskImpl{3, 4, 13, WAITING, task_4});
+  tasks[0] = buildTask(stackSpace[0], 2, 10, WAITING, task_1);
+  tasks[1] = buildTask(stackSpace[1], 5, 11, WAITING, task_2);
+  tasks[2] = buildTask(stackSpace[2], 6, 12, WAITING, task_3);
+  tasks[3] = buildTask(stackSpace[3], 4, 13, WAITING, task_4);
 }
 
 /**
@@ -36,12 +68,12 @@ Task** Task::buildTaskList(){
  * @param t2 Second Task to compare
  * @return int Negative if t1 is less than t2; 0 if they are equal; Positive if t1 is greater than t2
  */
-int Task::sort_deadline_asc(const void* t1, const void* t2)
+int sort_deadline_asc(const void* t1, const void* t2)
 {
-    TaskImpl* task1 = ((Task*) t1)->task;
-    TaskImpl* task2 = ((Task*) t2)->task;
+    Task* task1 = (Task*) t1;
+    Task* task2 = (Task*) t2;
 
-    return (task1->deadline - task2->deadline);
+    return (task1->tcb->deadline - task2->tcb->deadline);
 }
 
 /**
@@ -51,10 +83,10 @@ int Task::sort_deadline_asc(const void* t1, const void* t2)
  * @param t2 Second Task to compare
  * @return int Negative if t1 is less than t2; 0 if they are equal; Positive if t1 is greater than t2
  */
-int Task::sort_period_asc(const void* t1, const void* t2)
+int sort_period_asc(const void* t1, const void* t2)
 {
-    TaskImpl* task1 = ((Task*) t1)->task;
-    TaskImpl* task2 = ((Task*) t2)->task;
+    Task* task1 = (Task*) t1;
+    Task* task2 = (Task*) t2;
 
-    return (task1->period - task2->period);
+    return (task1->tcb->period - task2->tcb->period);
 }

@@ -1,28 +1,22 @@
 #ifndef _HYPERVISOR_H
 #define _HYPERVISOR_H
 
-#include "load_balancer.h"
 #include "task_queue.h"
+#include "thread.h"
 
-class Hypervisor{
-  private:
-    LoadBalancer* loadBalancer;
-    Thread** threads;
-    int threadNo;
-    int currThread;
-    Thread* nextThread();
+Thread** threads;
+uint8_t threadNo;
+uint8_t currThread;
+    
+Thread* nextThread();
 
-  public:
-    static void loadStackPointer(uint16_t sp);
-    static uint16_t saveStackPointer();
-    explicit Hypervisor(LoadBalancer* loadBalancer, int queueNo):
-      loadBalancer(loadBalancer), threadNo(queueNo), currThread(0){
-        threads = loadBalancer->buildThreads(this->threadNo);
-      };
+uint16_t saveCtx();
+void restoreCtx(uint16_t sp);
+    
+void loadStackPointer(uint16_t sp);
+uint16_t saveStackPointer();
 
-      void switchThread();
+void switchThread();
 
-      ~Hypervisor();
-};
 
 #endif //_HYPERVISOR_H_

@@ -5,26 +5,20 @@
 #include <task.h>
 #include <stdlib.h>
 
-class TaskQueue {
-    private:
-        int head;
-        int tail;
-        int capacity;
-        int count;
+#include <stdio.h>
+#include <stdlib.h>
 
-        Task** tasks;
-    public:
-        TaskQueue(int size = TASK_NO);
-        ~TaskQueue();
+#define MAX_SIZE 100 
 
-        bool isEmpty();
-        bool isFull();
-        void enqueue(Task* t);
-        Task* dequeue();
-        int size();
-        void sortBy(enum sort_options);
-        Task* peek();
-        Task** getAllTasks();
-};
+typedef struct Queue {
+    Task items[MAX_SIZE];
+    int front, rear;
+} Queue;
+
+void initializeQueue(Queue *q);
+int isFull(Queue *q);
+int isEmpty(Queue *q);
+void enqueue(Queue *q, Task task);
+Task dequeue(Queue *q);
 
 #endif

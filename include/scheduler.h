@@ -11,14 +11,6 @@ class Scheduler{
   public:
     explicit Scheduler(TaskQueue* taskQueue):
       taskQueue(taskQueue){};
-    
-    inline pcb_t* getCurrentPcb(){
-      return currTask->getPcb();
-    }
-
-    inline void storeCurrentPcb(pcb_t* pcb){
-      currTask->setPcb(pcb);
-    }
 };
 
 /*

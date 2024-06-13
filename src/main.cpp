@@ -1,9 +1,6 @@
 #include <task_queue.h>
 #include "hypervisor.h"
 
-TaskQueue* idleQueue = nullptr;
-TaskQueue* oldReadyQueue = nullptr;
-TaskQueue* readyQueue = nullptr;
 uint8_t* pxCurrentTCB = nullptr;
 int tickCount;
 
@@ -41,8 +38,8 @@ void mock_task_2(){
     }
 }
 
-TaskImpl* task1;
-TaskImpl* task2;
+Task* task1;
+Task* task2;
 
 void setup()
 {
@@ -63,7 +60,7 @@ void setup()
 
     delay(200);
 
-    Hypervisor::restoreCtx(task1->stackptr);
+    restoreCtx(task1->stackptr);
 }
 
 void loop()
@@ -99,74 +96,4 @@ ISR(TIMER1_COMPA_vect){
     // currTask = (++currTask) % taskNum;
     // task = tasks[currTask];
     // Hypervisor::restoreCtx(task->getStackPointer());
-}
-
-/**
- * @brief Increments the kernel tick and checks if a Task was activated
- * 
- */
-void incrementTick()
-{
-    Serial.println("Increment tick");
-    
-    if(tickCount++ >= INT32_MAX)
-        tickCount = 0;
-
-    Serial.println(tickCount);
-    checkIfReady();
-}
-
-/**
- * @brief Switches the execution context if a task with higher priority was activated 
- * 
- */
-void switchTask()
-{
-    // Serial.println("Switch task");
-    // if (pxCurrentTCB == nullptr && !readyQueue->isEmpty())
-    // {
-    //     Serial.println("First run");
-    //     readyQueue->sortBy(deadline);
-    //     Task* currentTask = readyQueue->dequeue();
-    //     oldReadyQueue = readyQueue;
-    //     currentTask->setRunning();
-    //     pxCurrentTCB = currentTask->getCurrentTcb();
-    // }
-    // else if (oldReadyQueue->peek()->getId() != readyQueue->peek()->getId())
-    // {
-    //     Serial.println("Task with higher priority activated");
-    //     readyQueue->sortBy(deadline);
-    //     Task* currentTask = readyQueue->dequeue();
-    //     oldReadyQueue = readyQueue;
-    //     currentTask->setRunning();
-    //     pxCurrentTCB = currentTask->getCurrentTcb();
-    // }
-}
-
-/**
- * @brief Checks if a Task was activated and is ready to be run.
- * Whenever a Task is ready, it is moved to the ready queue
- */
-void checkIfReady()
-{
-    Task** tasks = idleQueue->getAllTasks();
-
-    for(int i = 0; i < idleQueue->size(); i++)
-    {
-        Task* t = tasks[i];
-
-        if(t->isReady())
-        {
-            readyQueue->enqueue(t);
-        }
-    }
-}
-
-/**
- * @brief Runs every tick, updating the tick count value
- * and checking for new Tasks moved to a ready state 
- */
-void vPortYieldFromTick()
-{
-
 }

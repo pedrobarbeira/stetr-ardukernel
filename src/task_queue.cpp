@@ -23,7 +23,7 @@ int isEmpty(Queue *q) {
 }
 
 // Function to add an element to the queue
-void enqueue(Queue *q, Task task) {
+void enqueue(Queue *q, Task* task) {
     if(isFull(q)) {
         return;
     } else {
@@ -36,19 +36,19 @@ void enqueue(Queue *q, Task task) {
 }
 
 // Function to remove an element from the queue
-Task dequeue(Queue *q) {
-    Task task;
+Task* dequeue(Queue *q) {
+    Task* task;
     if(isEmpty(q)) {
-        item = -1;
+        return nullptr;
     } else {
-        item = q->items[q->front];
+        task = q->items[q->front];
         q->front++;
 
         if(q->front > q->rear) {
             q->front = q->rear = -1;
         }
     }
-    return item;
+    return task;
 }
 
 /**

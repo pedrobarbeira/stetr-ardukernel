@@ -5,11 +5,11 @@
 
 class Scheduler{
   private:
-    TaskQueue* taskQueue;
+    Queue* taskQueue;
     Task* currTask;
     //add other fields
   public:
-    explicit Scheduler(TaskQueue* taskQueue):
+    explicit Scheduler(Queue* taskQueue):
       taskQueue(taskQueue){};
 };
 

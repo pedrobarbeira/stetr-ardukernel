@@ -40,6 +40,7 @@ void mock_task_2(){
 
 Task* task1;
 Task* task2;
+uint16_t pCurrTCB;
 
 void setup()
 {
@@ -53,14 +54,10 @@ void setup()
     task1 = buildTask(space1, 2, 10, WAITING, mock_task_1);
     task2 = buildTask(space2, 2, 10, WAITING, mock_task_2);
 
-    Serial.print((uint16_t) space1);
-    Serial.println(task1->stackptr);
-    Serial.print((uint16_t) space2);
-    Serial.println(task2->stackptr);
-
+    pCurrTCB = task1->stackptr;
     delay(200);
 
-    restoreCtx(task1->stackptr);
+    RESTORE_CTX()
 }
 
 void loop()

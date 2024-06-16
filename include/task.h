@@ -16,6 +16,7 @@ enum State{
 };
 
 typedef struct tcb_t{
+    float execution_time;
     float period;
     int deadline;
     enum State state;

@@ -11,7 +11,6 @@ typedef void(*routine_t)(void);
 enum State{
     WAITING,
     READY,
-    BLOCKED,
     RUNNING,
 };
 

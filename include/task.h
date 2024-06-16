@@ -18,6 +18,7 @@ typedef struct tcb_t{
     float execution_time;
     float period;
     int deadline;
+    float last_execution_time;
     enum State state;
 }tcb_t;
 

@@ -1,13 +1,8 @@
-#include <task_queue.h>
-#include "hypervisor.h"
+#include <hypervisor.h>
 
-uint8_t* pxCurrentTCB = nullptr;
+volatile void* volatile pxCurrentTCB = 0;
 int tickCount;
 
-void vPortYieldFromTick() __attribute__ (( naked ));
-void incrementTick(); //__attribute__ (( naked ));
-void checkIfReady();// __attribute__ (( naked ));
-void switchTask();// __attribute__ (( naked ));
 void setup(void);
 void loop(void);
 
@@ -40,7 +35,6 @@ void mock_task_2(){
 
 Task* task1;
 Task* task2;
-uint16_t pCurrTCB;
 
 void setup()
 {
@@ -54,7 +48,7 @@ void setup()
     task1 = buildTask(space1, 2, 10, WAITING, mock_task_1);
     task2 = buildTask(space2, 2, 10, WAITING, mock_task_2);
 
-    pCurrTCB = task1->stackptr;
+    pxCurrentTCB = (uint8_t*) task1->stackptr;
     delay(200);
 
     RESTORE_CTX()
@@ -62,18 +56,6 @@ void setup()
 
 void loop()
 {
-    // if(task1->isWaiting())
-    // {
-    //     delay(3000);
-    //     task1->setReady();
-    // }
-    /*
-    else if(task2->state == waiting)
-    {
-        delay(1000);
-        task2->state = ready;
-    }
-    */
 }
 
 int task = 0;

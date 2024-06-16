@@ -1,7 +1,6 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include <Arduino.h>
 #include <task.h>
 
 void config_timer1_interrupts();

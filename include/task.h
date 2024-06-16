@@ -1,7 +1,7 @@
 #ifndef TASK_H_
 #define TASK_H_
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #define TASK_NO 100
 #define STACK_SIZE 128

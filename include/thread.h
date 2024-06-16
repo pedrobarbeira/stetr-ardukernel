@@ -1,8 +1,7 @@
 #ifndef _THREAD_H
 #define _THREAD_H
 
-#include "task_queue.h"
-#include "scheduler.h"
+#include <scheduler.h>
 
 class Thread{
   private:

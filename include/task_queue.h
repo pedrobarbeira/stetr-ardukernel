@@ -2,11 +2,6 @@
 #define TASK_QUEUE_H_
 
 #include <utils.h>
-#include <task.h>
-#include <stdlib.h>
-
-#include <stdio.h>
-#include <stdlib.h>
 
 #define MAX_SIZE 100 
 
